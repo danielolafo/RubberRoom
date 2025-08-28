@@ -2,7 +2,7 @@ from rest_framework.views import APIView
 from django.http import HttpResponse
 from .models  import AllocationSite
 from django.core import serializers
-from django.core.paginator import Paginator
+from django.core.paginator import Paginator, EmptyPage
 import json
 import logging
 from .mappers import toAllocationDto, AllocationSerializer
@@ -26,14 +26,14 @@ class AllocationView(APIView):
             resp = page_to_list(resp)
             resp = [toAllocationDto(item) for item in resp]
             return HttpResponse(json.dumps(resp, default=vars), content_type='application/json')
+        except (InvalidPageException, EmptyPage) as ex:
+            logging.exception(str(ex))
+            logging.exception(ex.__class__)
+            return HttpResponse([], content_type='application/json', status=400)
         except Exception as ex:
             logging.exception(str(ex))
             logging.exception(ex.__class__)
             return HttpResponse([], content_type='application/json', status=500)
-        except InvalidPageException as ex:
-            logging.exception(str(ex))
-            logging.exception(ex.__class__)
-            return HttpResponse([], content_type='application/json', status=400)
 
     def post(self, request):
         #logging.info(f"Creating allocation {request}", {request})
@@ -51,8 +51,3 @@ class AllocationView(APIView):
         resp = toAllocationDto(req)
         print(resp.city+" "+resp.address)
         return HttpResponse(json.dumps(resp, default=vars), content_type='application/json', status=201)
-
-"""
-    def searchById(self):
-        pass
-"""
