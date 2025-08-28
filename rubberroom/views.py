@@ -2,28 +2,38 @@ from rest_framework.views import APIView
 from django.http import HttpResponse
 from .models  import AllocationSite
 from django.core import serializers
+from django.core.paginator import Paginator
 import json
 import logging
 from .mappers import toAllocationDto, AllocationSerializer
+from .utils import *
+from .exceptions import *
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 class AllocationView(APIView):
 
     def get(self, request):
-        logging.info("This is an informational message.")
-        print(request.GET.get('city'))
-        asi = AllocationSite()
-        asi.city='Oklahoma'
-        asi.address="Stret 123"
-        AllocationSite.save(asi)
-        resp=AllocationSite.objects.all()
-        tmp=list(resp)
-        print(tmp[2])
-        print(tmp[2].city)
-        #print(serializers.serialize('json',tmp[2]))
-        resp2 = serializers.serialize('json',resp)
-        print(type(resp2))
-        return HttpResponse(resp2, content_type='application/json')
+        try:
+            logging.info("This is an informational message.")
+            print(request.GET.get('city'))
+            city = str(request.GET.get('city'))
+            pageNumber = int(request.GET.get('page'))
+            pageSize = int(request.GET.get('pageSize'))
+            resp = AllocationSite.objects.all()
+            paginator = Paginator(resp, pageSize)
+            resp = paginator.page(pageNumber)
+            # resp = [toAllocationDto(x) for x in resp]
+            resp = page_to_list(resp)
+            resp = [toAllocationDto(item) for item in resp]
+            return HttpResponse(json.dumps(resp, default=vars), content_type='application/json')
+        except Exception as ex:
+            logging.exception(str(ex))
+            logging.exception(ex.__class__)
+            return HttpResponse([], content_type='application/json', status=500)
+        except InvalidPageException as ex:
+            logging.exception(str(ex))
+            logging.exception(ex.__class__)
+            return HttpResponse([], content_type='application/json', status=400)
 
     def post(self, request):
         #logging.info(f"Creating allocation {request}", {request})
