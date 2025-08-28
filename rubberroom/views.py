@@ -12,6 +12,15 @@ from .exceptions import *
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 class AllocationView(APIView):
 
+    def validate_pagination(self, request):
+        city = str(request.GET.get('city'))
+        pageNumber = int(request.GET.get('page'))
+        pageSize = int(request.GET.get('pageSize'))
+        if pageNumber <= 0:
+            raise InvalidPageException("The page number cannot be less than 0")
+        if pageSize <5 or pageSize > 100:
+            raise InvalidPageException("The page size cannot be less than 5 nor greater than 100")
+
     def get(self, request):
         try:
             logging.info("This is an informational message.")
@@ -19,6 +28,7 @@ class AllocationView(APIView):
             city = str(request.GET.get('city'))
             pageNumber = int(request.GET.get('page'))
             pageSize = int(request.GET.get('pageSize'))
+            self.validate_pagination(request)
             resp = AllocationSite.objects.all()
             paginator = Paginator(resp, pageSize)
             resp = paginator.page(pageNumber)
@@ -29,7 +39,10 @@ class AllocationView(APIView):
         except (InvalidPageException, EmptyPage) as ex:
             logging.exception(str(ex))
             logging.exception(ex.__class__)
-            return HttpResponse([], content_type='application/json', status=400)
+            print(type(ex)==InvalidPageException)
+            if type(ex)==InvalidPageException:
+                return HttpResponse(str(ex), content_type='application/json', status=400)
+            return HttpResponse('No results found', content_type='application/json', status=404)
         except Exception as ex:
             logging.exception(str(ex))
             logging.exception(ex.__class__)
