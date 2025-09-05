@@ -16,20 +16,21 @@ category score for appears in the filter when users looking for a specific tempo
 class CategoryPriority(models.Model):
     #allocationSite = models.ForeignKey(AllocationSite)
     #category = models.ForeignKey(Category, on_delete=models.PROTECT, null=True, default=None)
-    priority = models.IntegerField(max_length=2, default=0)
+    priority = models.IntegerField(default=0)
 
     class Meta:
         db_table = 'category_priority'
 
 
 class User(models.Model):
-    id = models.BigAutoField(primary_key=True)
+    #id = models.AutoField(primary_key=True)
     username = models.CharField(max_length=30, null=True, blank=True)
     user_rating = models.DecimalField(max_digits=3, decimal_places=1, default=0)
     description = models.CharField(max_length=150, null=True, blank=True)
+    email = models.EmailField(max_length=40, null=False, blank=False, default='*')
 
     class Meta:
-        db_table = 'user'
+        db_table = 'users'
 
 class AllocationSite(models.Model):
     city = models.CharField(max_length=150, null=True, blank=True)
