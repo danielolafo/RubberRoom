@@ -9,6 +9,13 @@ class AllocationSiteDto:
         self.ratings = []
         self.tags = []
 
+class UserDto:
+    def __init__(self):
+        self.id = None
+        self.username = None
+        self.user_rating = None
+        self.description = None
+        self.email = None
 """
     def __dict__(self):
         print('Dict ', self.__dict__)

@@ -23,7 +23,7 @@ class CategoryPriority(models.Model):
 
 
 class User(models.Model):
-    #id = models.AutoField(primary_key=True)
+    id = models.AutoField(primary_key=True)
     username = models.CharField(max_length=30, null=True, blank=True)
     user_rating = models.DecimalField(max_digits=3, decimal_places=1, default=0)
     description = models.CharField(max_length=150, null=True, blank=True)

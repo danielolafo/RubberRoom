@@ -5,10 +5,12 @@ from django.core import serializers
 from django.core.paginator import Paginator, EmptyPage
 import json
 import logging
-from .mappers import toAllocationDto, AllocationSerializer
+from .mappers import *
 from .utils import *
 from .exceptions import *
 import re
+from .dtos import UserDto
+from mapper.object_mapper import  ObjectMapper
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 class AllocationView(APIView):
@@ -71,7 +73,9 @@ class UserView(APIView):
             return HttpResponse(json.dumps(user_validation, default=vars), content_type='application/json', status=400)
         #User.save(user)
         user.save()
-        return HttpResponse(json.dumps(req, default=vars), content_type='application/json', status=201)
+        user_dto = UserDto()
+        user_dto = user_to_dto(user)
+        return HttpResponse(json.dumps(user_dto, default=vars), content_type='application/json', status=201)
 
     def validate_user(self, user):
         logging.info("validate_user: user %s",json.dumps(user, default=vars))
