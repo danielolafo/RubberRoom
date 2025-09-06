@@ -3,6 +3,7 @@ from django.http import HttpResponse
 from .models  import AllocationSite, User
 from django.core import serializers
 from django.core.paginator import Paginator, EmptyPage
+from django.db.models import Q
 import json
 import logging
 from .mappers import *
@@ -70,6 +71,7 @@ class UserView(APIView):
         user = User(**req)
         user_validation = self.validate_user(user)
         if(not user_validation.is_valid):
+            logging.info("post %s", json.dumps(user_validation, default=vars))
             return HttpResponse(json.dumps(user_validation, default=vars), content_type='application/json', status=400)
         #User.save(user)
         user.save()
@@ -77,9 +79,17 @@ class UserView(APIView):
         user_dto = user_to_dto(user)
         return HttpResponse(json.dumps(user_dto, default=vars), content_type='application/json', status=201)
 
+    def is_user_existent(self,user):
+        logging.info("is_user_existsten %s",json.dumps(user, default=vars))
+        db_users = User.objects.filter(Q(email=user.email) | Q(username=user.username))
+        if db_users is not None and len(db_users)>0:
+            logging.exception("is_user_existent : Exception : Username or email exists")
+            raise Exception("Username or email exists")
+
     def validate_user(self, user):
         logging.info("validate_user: user %s",json.dumps(user, default=vars))
         try:
+            self.is_user_existent(user)
             email_resp = self.validate_email(user)
             if(email_resp.is_valid):
                 val_resp = ValidationResponseBuilder()
@@ -88,7 +98,7 @@ class UserView(APIView):
                 return ValidationResponse.ValidationResponseBuilder(self).build_valid(False).build_message('User is invalid').build()
         except Exception as ex:
             logging.exception("validate_user : %s", ex)
-            valResp = ValidationResponse(False,'User is invalid')
+            valResp = ValidationResponse(False,str(ex))
             return valResp
 
     def validate_email(self, user):

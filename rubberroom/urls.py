@@ -24,7 +24,7 @@ router.register(r'allocation', AllocationView, basename='allocation')
 
 urlpatterns = [
     #path('allocation', include('controller.urls.py')),
-    path('allocation/search', AllocationView.as_view()),
+    path('allocation', AllocationView.as_view()),
     path('user', UserView.as_view()),
     path('admin/', admin.site.urls),
 ]
