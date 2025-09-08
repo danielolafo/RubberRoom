@@ -77,7 +77,7 @@ WSGI_APPLICATION = 'rubberroom.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'postgres',
+        'NAME': 'ruberroom',
         'USER': 'postgres',
         'PASSWORD': 'new_password',
         'HOST': 'localhost',

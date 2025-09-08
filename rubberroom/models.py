@@ -73,5 +73,5 @@ class Tag(models.Model):
         db_table = 'tag'
 
 class AllocationSiteTags(models.Model):
-    allocation_site_id = models.ForeignKey()
-    tag_id = models.ForeignKey()
+    allocation_site_id = models.ForeignKey(AllocationSite, on_delete=models.PROTECT, null=True, default=None)
+    tag_id = models.ForeignKey(Tag, on_delete=models.PROTECT, null=True, default=None)
