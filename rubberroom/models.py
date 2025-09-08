@@ -8,19 +8,6 @@ class Category(models.Model):
     class Meta:
         db_table = 'category'
 
-"""
-Define the priority that a owner wants to give to their location.
-If the user wants to give a high priority to one category over another It will give a 1  max - 10 min
-category score for appears in the filter when users looking for a specific temporal residence category
-"""
-class CategoryPriority(models.Model):
-    #allocationSite = models.ForeignKey(AllocationSite)
-    #category = models.ForeignKey(Category, on_delete=models.PROTECT, null=True, default=None)
-    priority = models.IntegerField(default=0)
-
-    class Meta:
-        db_table = 'category_priority'
-
 
 class User(models.Model):
     id = models.AutoField(primary_key=True)
@@ -35,17 +22,35 @@ class User(models.Model):
 class AllocationSite(models.Model):
     city = models.CharField(max_length=150, null=True, blank=True)
     address = models.CharField(max_length=150, null=True, blank=True)
-    #owner = models.ForeignKey(User, on_delete=models.PROTECT, null=True, default=None)
+    owner = models.ForeignKey(User, on_delete=models.PROTECT, null=True, default=None)
     ratings=[]
     tags=[]
 
     class Meta:
         db_table = 'allocation_site'
 
+"""
+Define the priority that a owner wants to give to their location.
+If the user wants to give a high priority to one category over another It will give a 1  max - 10 min
+category score for appears in the filter when users looking for a specific temporal residence category
+"""
+class CategoryPriority(models.Model):
+    allocationSite = models.ForeignKey(AllocationSite, on_delete=models.PROTECT, null=True, default=None)
+    category = models.ForeignKey(Category, on_delete=models.PROTECT, null=True, default=None)
+    priority = models.IntegerField(default=0)
+
+    class Meta:
+        db_table = 'category_priority'
+
 class MediaData(models.Model):
-    #allocation_site = models.ForeignKey(AllocationSite, on_delete=models.PROTECT, null=True, default=None)
-    photos=[]
-    video=[]
+    id = models.BigAutoField(primary_key=True)
+    allocation_id = models.ForeignKey(AllocationSite, on_delete=models.PROTECT, null=True, default=None)
+    insert_date = models.DateField()
+    state = models.CharField()
+    content= models.BinaryField()
+
+    class Meta:
+        db_table = 'media_data'
 
 """
 The rating asigned to an allocation by an user.
@@ -53,8 +58,20 @@ The rating asigned to an allocation by an user.
 class Rating(models.Model):
     rating = models.DecimalField(max_digits=3, decimal_places=1, default=0)
     comment = models.CharField(max_length=150, null=True, blank=True)
-    #user=models.ForeignKey(User,  on_delete=models.PROTECT, null=True, default=None)
-    #allocation=models.ForeignKey(AllocationSite, on_delete=models.PROTECT, null=True, default=None)
+    user=models.ForeignKey(User,  on_delete=models.PROTECT, null=True, default=None)
+    allocation=models.ForeignKey(AllocationSite, on_delete=models.PROTECT, null=True, default=None)
 
     class Meta:
         db_table = 'rating'
+
+class Tag(models.Model):
+    description = models.CharField(max_length=100)
+    state = models.CharField(max_length=1)
+    creation_date = models.DateField()
+
+    class Meta:
+        db_table = 'tag'
+
+class AllocationSiteTags(models.Model):
+    allocation_site_id = models.ForeignKey()
+    tag_id = models.ForeignKey()

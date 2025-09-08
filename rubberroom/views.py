@@ -28,7 +28,6 @@ class AllocationView(APIView):
     def get(self, request):
         try:
             logging.info("This is an informational message.")
-            print(request.GET.get('city'))
             city = str(request.GET.get('city'))
             pageNumber = int(request.GET.get('page'))
             pageSize = int(request.GET.get('pageSize'))
@@ -36,7 +35,6 @@ class AllocationView(APIView):
             resp = AllocationSite.objects.all()
             paginator = Paginator(resp, pageSize)
             resp = paginator.page(pageNumber)
-            # resp = [toAllocationDto(x) for x in resp]
             resp = page_to_list(resp)
             resp = [toAllocationDto(item) for item in resp]
             return HttpResponse(json.dumps(resp, default=vars), content_type='application/json')
@@ -110,3 +108,16 @@ class UserView(APIView):
         except Exception as ex:
             logging.error("Exception : ",ex)
             raise InvalidEmailException("The email is invalid")
+
+class FeedView(APIView):
+
+    """
+    Get a list of possible interesting allocations for an user based on their friends
+    and interest activity.
+    """
+    def get(self, user_id):
+        #Call Kafka module
+        try:
+            pass
+        except:
+            raise Exception("Not numeric user id")
