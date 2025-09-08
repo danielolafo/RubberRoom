@@ -55,10 +55,12 @@ class AllocationView(APIView):
         try:
             req = json.loads(request.body.decode('utf-8'))
             logging.info(f"Creating allocation {req}", req)
-            req = AllocationSite(**req)
+            req = to_allocation_site(req)
+
+            #Search for existing allocations in same city and address
             search_results = AllocationSite.objects.filter(city=req.city, address=req.address)
             if len(search_results) > 0:
-                return HttpResponse([], content_type='application/json', status=400)
+                return HttpResponse('The object already exits', content_type='application/json', status=400)
             AllocationSite.save(req)
             resp = toAllocationDto(req)
             logging.info('AllocationView.post Response : {}',json.dumps(resp, default=vars))

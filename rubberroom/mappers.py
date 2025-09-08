@@ -1,4 +1,4 @@
-from .models import AllocationSite, User
+from .models import *
 from .dtos import AllocationSiteDto, UserDto
 from rest_framework import serializers
 from mapper.object_mapper import ObjectMapper
@@ -6,7 +6,7 @@ from mapper.object_mapper import ObjectMapper
 class AllocationSerializer(serializers.ModelSerializer):
     class Meta:
         model = AllocationSite
-        fields = '__all__'
+        fields = ['city','address','owner','ratings','tags']
 def toAllocationDto(allocationSite: AllocationSite):
     dto = AllocationSiteDto()
 
@@ -16,6 +16,15 @@ def toAllocationDto(allocationSite: AllocationSite):
     dto.ratings=allocationSite.ratings
 
     return dto
+
+def to_allocation_site(req_dict):
+    allocation_site = AllocationSite()
+    allocation_site.tags = req_dict['tags']
+    allocation_site.city = req_dict['city']
+    allocation_site.ratings = req_dict['ratings']
+    allocation_site.address = req_dict['address']
+    allocation_site.owner = User(**req_dict['owner'])
+    return allocation_site
 
 def user_to_dto(user):
     user_dto = UserDto()

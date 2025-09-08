@@ -1,5 +1,7 @@
 import json
 
+import pydantic
+from pydantic import BaseModel
 
 class AllocationSiteDto:
     def __init__(self):
@@ -9,18 +11,17 @@ class AllocationSiteDto:
         self.ratings = []
         self.tags = []
 
-class UserDto:
+class UserDto(pydantic.BaseModel):
     def __init__(self):
         self.id = None
         self.username = None
         self.user_rating = None
         self.description = None
         self.email = None
-"""
-    def __dict__(self):
-        print('Dict ', self.__dict__)
-        return json.dumps(self,
-            default=lambda o: o.__dict__,
-            sort_keys=True,
-            indent=4)
-"""
+
+class WrapperResponse():
+
+    def __init__(self):
+        self.data=None
+        self.message=None
+        self.success=None
