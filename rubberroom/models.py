@@ -22,7 +22,7 @@ class User(models.Model):
 class AllocationSite(models.Model):
     city = models.CharField(max_length=150, null=False, blank=True)
     address = models.CharField(max_length=150, null=False, blank=True)
-    owner = models.ForeignKey(User, on_delete=models.PROTECT, null=False, default=None, error_messages={'Error':'Please provide an owner for this allocation'})
+    owner = models.ForeignKey(User, on_delete=models.PROTECT, null=False, default=None, error_messages={'null':'Please provide an owner for this allocation'})
     ratings=[]
     tags=[]
 
