@@ -11,7 +11,7 @@ from .mappers import *
 from .utils import *
 from .exceptions import *
 import re
-from .dtos import UserDto
+from .dtos import *
 from mapper.object_mapper import  ObjectMapper
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -60,7 +60,11 @@ class AllocationView(APIView):
             #Search for existing allocations in same city and address
             search_results = AllocationSite.objects.filter(city=req.city, address=req.address)
             if len(search_results) > 0:
-                return HttpResponse('The object already exits', content_type='application/json', status=400)
+                resp = WrapperResponse()
+                resp.message="Allocation already exists in same city and address"
+                resp.data=None
+                resp.success=False
+                return HttpResponse(json.dumps(resp, default=vars), content_type='application/json', status=400)
             AllocationSite.save(req)
             resp = toAllocationDto(req)
             logging.info('AllocationView.post Response : {}',json.dumps(resp, default=vars))
