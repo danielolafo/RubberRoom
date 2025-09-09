@@ -7,7 +7,7 @@ class AllocationSiteDto:
     def __init__(self):
         self.city = None
         self.address = None
-        # owner = models.ForeignKey(User, on_delete=models.PROTECT, null=True, default=None)
+        self.owner = None
         self.ratings = []
         self.tags = []
 

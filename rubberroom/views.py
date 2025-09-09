@@ -37,7 +37,7 @@ class AllocationView(APIView):
             paginator = Paginator(resp, pageSize)
             resp = paginator.page(pageNumber)
             resp = page_to_list(resp)
-            resp = [toAllocationDto(item) for item in resp]
+            resp = [to_allocation_dto(item) for item in resp]
             return HttpResponse(json.dumps(resp, default=vars), content_type='application/json')
         except (InvalidPageException, EmptyPage) as ex:
             logging.exception(str(ex))
@@ -66,7 +66,9 @@ class AllocationView(APIView):
                 resp.success=False
                 return HttpResponse(json.dumps(resp, default=vars), content_type='application/json', status=400)
             AllocationSite.save(req)
-            resp = toAllocationDto(req)
+            ser_resp = AllocationSerializer(req)
+            print("Serialized ", ser_resp.data)
+            resp = to_allocation_dto(req)
             logging.info('AllocationView.post Response : {}',json.dumps(resp, default=vars))
             return HttpResponse(json.dumps(resp, default=vars), content_type='application/json', status=201)
         except Exception as ex:

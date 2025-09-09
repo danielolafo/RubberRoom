@@ -7,14 +7,14 @@ class AllocationSerializer(serializers.ModelSerializer):
     class Meta:
         model = AllocationSite
         fields = ['city','address','owner','ratings','tags']
-def toAllocationDto(allocationSite: AllocationSite):
+def to_allocation_dto(allocationSite: AllocationSite):
     dto = AllocationSiteDto()
 
     dto.city=allocationSite.city
     dto.address=allocationSite.address
     dto.tags=allocationSite.tags
     dto.ratings=allocationSite.ratings
-
+    dto.owner = allocationSite.owner.id
     return dto
 
 def to_allocation_site(req_dict):
