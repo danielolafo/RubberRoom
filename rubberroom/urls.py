@@ -16,7 +16,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from .views import AllocationView, UserView
+from .views import *
 from rest_framework.routers import DefaultRouter
 
 router = DefaultRouter(trailing_slash=False)
@@ -25,6 +25,7 @@ router.register(r'allocation', AllocationView, basename='allocation')
 urlpatterns = [
     #path('allocation', include('controller.urls.py')),
     path('allocation', AllocationView.as_view()),
+    path('allocation/<int:id>', AllocationDetailView.as_view()),
     path('user', UserView.as_view()),
     path('admin/', admin.site.urls),
 ]

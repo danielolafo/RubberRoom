@@ -5,6 +5,7 @@ from pydantic import BaseModel
 
 class AllocationSiteDto:
     def __init__(self):
+        self.id = None
         self.city = None
         self.address = None
         self.owner = None

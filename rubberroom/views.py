@@ -17,6 +17,7 @@ from mapper.object_mapper import  ObjectMapper
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 class AllocationView(APIView):
 
+
     def validate_pagination(self, request):
         city = str(request.GET.get('city'))
         pageNumber = int(request.GET.get('page'))
@@ -75,6 +76,15 @@ class AllocationView(APIView):
             logging.exception("AllocationSiteView.post Exception : ",str(ex))
             resp = ValidationResponse(False, 'The allocation could not be saved')
             return HttpResponse(json.dumps(resp, default=vars), content_type='application/json', status=201)
+
+class AllocationDetailView(APIView):
+
+    def get(self, request, id):
+        allocation_site = AllocationSite.objects.get(id=id)
+        if allocation_site is None:
+            return HttpResponse([], content_type='application/json', status=404)
+        resp = AllocationSerializer(allocation_site)
+        return HttpResponse(json.dumps(resp.data, default=vars), content_type='application/json', status=201)
 
 class UserView(APIView):
 

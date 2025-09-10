@@ -6,10 +6,10 @@ from mapper.object_mapper import ObjectMapper
 class AllocationSerializer(serializers.ModelSerializer):
     class Meta:
         model = AllocationSite
-        fields = ['city','address','owner','ratings','tags']
+        fields = ['id','city','address','owner','ratings','tags']
 def to_allocation_dto(allocationSite: AllocationSite):
     dto = AllocationSiteDto()
-
+    dto.id = allocationSite.id
     dto.city=allocationSite.city
     dto.address=allocationSite.address
     dto.tags=allocationSite.tags
