@@ -1,5 +1,5 @@
 from django.db import models
-
+from django.core.validators import MinValueValidator
 
 class Category(models.Model):
     name = models.CharField(max_length=150, null=False, blank=True)
@@ -75,3 +75,13 @@ class Tag(models.Model):
 class AllocationSiteTags(models.Model):
     allocation_site_id = models.ForeignKey(AllocationSite, on_delete=models.PROTECT, null=False, default=None)
     tag_id = models.ForeignKey(Tag, on_delete=models.PROTECT, null=False, default=None)
+
+class AllocationBooking(models.Model):
+    PAYMENT_STATUS = [('D', 'Paid'), ('P', 'Pending'), ('T','Partial')]
+    allocation_site_id  = models.ForeignKey(AllocationSite, on_delete=models.PROTECT, null=False, default=None)
+    start_date = models.DateField()
+    end_date = models.DateField()
+    number_of_persons = models.IntegerField(validators=[MinValueValidator(0)])
+    payment_status = models.CharField(choices=PAYMENT_STATUS)
+
+
