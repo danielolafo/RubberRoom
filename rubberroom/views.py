@@ -80,11 +80,15 @@ class AllocationView(APIView):
 class AllocationDetailView(APIView):
 
     def get(self, request, id):
-        allocation_site = AllocationSite.objects.get(id=id)
-        if allocation_site is None:
-            return HttpResponse([], content_type='application/json', status=404)
-        resp = AllocationSerializer(allocation_site)
-        return HttpResponse(json.dumps(resp.data, default=vars), content_type='application/json', status=201)
+        try:
+            allocation_site = AllocationSite.objects.get(id=id)
+            if allocation_site is None:
+                return HttpResponse([], content_type='application/json', status=404)
+            resp = AllocationSerializer(allocation_site)
+            return HttpResponse(json.dumps(resp.data, default=vars), content_type='application/json', status=201)
+        except Exception as ex:
+            logging.exception("AllocationDetailView.get Exception: ", str(ex))
+            return HttpResponse(json.dumps(AllocationSite(),default=vars), content_type='application/json', status=404)
 
 class UserView(APIView):
 
