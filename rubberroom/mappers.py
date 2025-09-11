@@ -2,6 +2,19 @@ from .models import *
 from .dtos import AllocationSiteDto, UserDto
 from rest_framework import serializers
 from mapper.object_mapper import ObjectMapper
+import base64
+
+class Base64BinaryField(serializers.Field):
+    def to_representation(self, value):
+        # Encode binary data to base64 string for output
+        return base64.b64encode(value).decode('utf-8')
+
+    def to_internal_value(self, data):
+        # Decode base64 string to binary data for input
+        try:
+            return base64.b64decode(data)
+        except (TypeError, ValueError):
+            raise serializers.ValidationError("Invalid base64 string.")
 
 class AllocationSerializer(serializers.ModelSerializer):
     class Meta:
@@ -9,9 +22,12 @@ class AllocationSerializer(serializers.ModelSerializer):
         fields = ['id','city','address','owner','ratings','tags']
 
 class MediaDataSerializer(serializers.ModelSerializer):
+    content = Base64BinaryField()
+
     class Meta:
         model = MediaData
-        fields =  ['id', 'allocation', 'insert_date', 'state',  'url']
+        fields =  ['id', 'allocation', 'insert_date', 'state',  'url','content']
+
 
 def to_allocation_dto(allocationSite: AllocationSite):
     dto = AllocationSiteDto()
