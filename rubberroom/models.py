@@ -1,12 +1,14 @@
 from django.db import models
 from django.core.validators import MinValueValidator
 
+BASE_STATUS = [('A', 'Active'), ('I', 'Inactive')]
 class Category(models.Model):
     name = models.CharField(max_length=150, null=False, blank=True)
     state = models.CharField(max_length=1, default=1)
 
     class Meta:
         db_table = 'category'
+        managed=False
 
 
 class User(models.Model):
@@ -18,6 +20,7 @@ class User(models.Model):
 
     class Meta:
         db_table = 'users'
+        managed = False
 
 class AllocationSite(models.Model):
     city = models.CharField(max_length=150, null=False, blank=True)
@@ -28,6 +31,7 @@ class AllocationSite(models.Model):
 
     class Meta:
         db_table = 'allocation_site'
+        managed = False
 
 """
 Define the priority that a owner wants to give to their location.
@@ -41,16 +45,19 @@ class CategoryPriority(models.Model):
 
     class Meta:
         db_table = 'category_priority'
+        managed = False
 
 class MediaData(models.Model):
     id = models.BigAutoField(primary_key=True)
-    allocation_id = models.ForeignKey(AllocationSite, on_delete=models.PROTECT, null=False, default=None)
-    insert_date = models.DateField()
-    state = models.CharField()
-    content= models.BinaryField()
+    allocation = models.ForeignKey(AllocationSite, on_delete=models.PROTECT, null=False, default=None)
+    insert_date = models.DateField(null=False, default=None)
+    state = models.CharField(null=False, choices=BASE_STATUS, default=BASE_STATUS[0])
+    content= models.BinaryField(null=True, default=None)
+    url = models.CharField(null=True)
 
     class Meta:
         db_table = 'media_data'
+        managed = False
 
 """
 The rating asigned to an allocation by an user.
@@ -63,6 +70,7 @@ class Rating(models.Model):
 
     class Meta:
         db_table = 'rating'
+        managed = False
 
 class Tag(models.Model):
     description = models.CharField(max_length=100)
@@ -71,10 +79,15 @@ class Tag(models.Model):
 
     class Meta:
         db_table = 'tag'
+        managed = False
 
 class AllocationSiteTags(models.Model):
     allocation_site_id = models.ForeignKey(AllocationSite, on_delete=models.PROTECT, null=False, default=None)
     tag_id = models.ForeignKey(Tag, on_delete=models.PROTECT, null=False, default=None)
+
+    class Meta:
+        db_table = 'allocation_site_tag'
+        managed = False
 
 class AllocationBooking(models.Model):
     PAYMENT_STATUS = [('D', 'Paid'), ('P', 'Pending'), ('T','Partial')]
@@ -84,4 +97,28 @@ class AllocationBooking(models.Model):
     number_of_persons = models.IntegerField(validators=[MinValueValidator(0)])
     payment_status = models.CharField(choices=PAYMENT_STATUS)
 
+    class Meta:
+        db_table = 'allocation_booking'
+        managed = False
 
+class UserInteractions(models.Model):
+    allocation_site =  models.ForeignKey(AllocationSite, on_delete=models.PROTECT, null=False, default=None)
+    registry_date = models.DateField()
+    activity_entity = models.CharField(db_comment='The table name that the user interacted with')
+    activity_id = models.IntegerField(db_comment='The id of the record in the table that the user interacted with')
+    user_id = models.ForeignKey(User, on_delete=models.PROTECT, null=False, default=None)
+
+    class Meta:
+        db_table = 'user_interaction'
+        managed = False
+
+
+class UserContact(models.Model):
+    user_id = models.ForeignKey(User, on_delete=models.PROTECT, null=False, default=None, related_name='user_id')
+    friend_id = models.ForeignKey(User, on_delete=models.PROTECT, null=False, default=None, related_name='friend_id')
+    friends_from = models.DateField()
+    status = models.CharField(choices=BASE_STATUS)
+
+    class Meta:
+        db_table = 'user_contact'
+        managed = False

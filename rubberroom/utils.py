@@ -47,3 +47,7 @@ class ValidationResponseBuilder:
 
     def build(self):
         return ValidationResponse(self.is_valid, self.message)
+
+class Constants:
+    PHOTOS = 'photos'
+    ALLOCATION_ID = 'allocation_id'

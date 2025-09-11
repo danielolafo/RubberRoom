@@ -1,5 +1,6 @@
 from django.db import IntegrityError
 from rest_framework.views import APIView
+from rest_framework.generics import ListAPIView
 from django.http import HttpResponse
 from .models  import AllocationSite, User
 from django.core import serializers
@@ -13,6 +14,7 @@ from .exceptions import *
 import re
 from .dtos import *
 from mapper.object_mapper import  ObjectMapper
+import datetime
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 class AllocationView(APIView):
@@ -113,6 +115,10 @@ class UserView(APIView):
             raise Exception("Username or email exists")
 
     def validate_user(self, user):
+        """
+        Check if user email is well formed. If not then returns a ValidationResponse instance
+        with valid=False and message indicating that the email is invalid
+        """
         logging.info("validate_user: user %s",json.dumps(user, default=vars))
         try:
             self.is_user_existent(user)
@@ -136,6 +142,39 @@ class UserView(APIView):
         except Exception as ex:
             logging.error("Exception : ",ex)
             raise InvalidEmailException("The email is invalid")
+
+class MediaDataView(APIView):
+     def post(self, request):
+         logging.info(f"MediaDataView.post {request.GET} {request.POST} {request.FILES}")
+         media_data = MediaData()
+         media_data.content=request.FILES[Constants.PHOTOS].read()
+         media_data.id=1
+         media_data.state='A'
+         media_data.insert_date=datetime.datetime.now()
+         allocation_site =AllocationSite()
+         allocation_site.id=request.GET.get(Constants.ALLOCATION_ID)
+         media_data.allocation_id=allocation_site
+         MediaData.save(media_data)
+         return HttpResponse([], content_type='application/json', status=201)
+
+
+
+class MediaDataDetailView(ListAPIView):
+    queryset = MediaData.objects.all()
+    model = MediaData
+    serializer_class = MediaDataSerializer
+
+    def get_queryset(self):
+        try:
+            custom_queryset = MediaData.objects.filter(allocation__id=self.kwargs[Constants.ALLOCATION_ID])
+            serializer = MediaDataSerializer(custom_queryset,many=True)
+            print('Paso 3 ', serializer.data)
+            #return HttpResponse('Hola', content_type='application/json', status=200)
+            return custom_queryset
+        except Exception as ex:
+            print('Error ', serializer.data)
+            return HttpResponse(content_type='application/json', status=404)
+
 
 class FeedView(APIView):
 

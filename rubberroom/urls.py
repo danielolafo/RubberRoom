@@ -27,5 +27,7 @@ urlpatterns = [
     path('allocation', AllocationView.as_view()),
     path('allocation/<int:id>', AllocationDetailView.as_view()),
     path('user', UserView.as_view()),
+    path('media-data', MediaDataView.as_view()),
+    path('media-data/<int:allocation_id>', MediaDataDetailView.as_view()),
     path('admin/', admin.site.urls),
 ]

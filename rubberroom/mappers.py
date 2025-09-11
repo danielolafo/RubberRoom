@@ -7,6 +7,12 @@ class AllocationSerializer(serializers.ModelSerializer):
     class Meta:
         model = AllocationSite
         fields = ['id','city','address','owner','ratings','tags']
+
+class MediaDataSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MediaData
+        fields =  ['id', 'allocation', 'insert_date', 'state',  'url']
+
 def to_allocation_dto(allocationSite: AllocationSite):
     dto = AllocationSiteDto()
     dto.id = allocationSite.id
