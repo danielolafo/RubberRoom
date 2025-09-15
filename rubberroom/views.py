@@ -144,7 +144,10 @@ class UserView(APIView):
             raise InvalidEmailException("The email is invalid")
 
 class MediaDataView(APIView):
-     def post(self, request):
+    """
+    This view manages all the REST endpoints for managing all the media data (photos, videos) for an allocation
+    """
+    def post(self, request):
          logging.info(f"MediaDataView.post {request.GET} {request.POST} {request.FILES}")
          media_data = MediaData()
          media_data.content=request.FILES[Constants.PHOTOS].read()

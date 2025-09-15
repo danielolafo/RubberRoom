@@ -106,7 +106,7 @@ class UserInteractions(models.Model):
     registry_date = models.DateField()
     activity_entity = models.CharField(db_comment='The table name that the user interacted with')
     activity_id = models.IntegerField(db_comment='The id of the record in the table that the user interacted with')
-    user_id = models.ForeignKey(User, on_delete=models.PROTECT, null=False, default=None)
+    user_id = models.ForeignKey(User, on_delete=models.PROTECT, null=False, default=None, db_column='user_id')
 
     class Meta:
         db_table = 'user_interaction'
@@ -114,8 +114,8 @@ class UserInteractions(models.Model):
 
 
 class UserContact(models.Model):
-    user_id = models.ForeignKey(User, on_delete=models.PROTECT, null=False, default=None, related_name='user_id')
-    friend_id = models.ForeignKey(User, on_delete=models.PROTECT, null=False, default=None, related_name='friend_id')
+    first_user_id = models.ForeignKey(User, on_delete=models.PROTECT, null=False, default=None, related_name='first_user_id', db_column='first_user_id')
+    second_user_id = models.ForeignKey(User, on_delete=models.PROTECT, null=False, default=None, related_name='second_user_id', db_column='second_user_id')
     friends_from = models.DateField()
     status = models.CharField(choices=BASE_STATUS)
 
