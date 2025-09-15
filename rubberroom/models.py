@@ -33,12 +33,13 @@ class AllocationSite(models.Model):
         db_table = 'allocation_site'
         managed = False
 
-"""
-Define the priority that a owner wants to give to their location.
-If the user wants to give a high priority to one category over another It will give a 1  max - 10 min
-category score for appears in the filter when users looking for a specific temporal residence category
-"""
+
 class CategoryPriority(models.Model):
+    """
+    Define the priority that an owner wants to give to their location.
+    If the user wants to give a high priority to one category over another It will give a 1  max - 10 min
+    category score for appears in the filter when users looking for a specific temporal residence category
+    """
     allocationSite = models.ForeignKey(AllocationSite, on_delete=models.PROTECT, null=False, default=None)
     category = models.ForeignKey(Category, on_delete=models.PROTECT, null=False, default=None)
     priority = models.IntegerField(default=0)
@@ -48,6 +49,12 @@ class CategoryPriority(models.Model):
         managed = False
 
 class MediaData(models.Model):
+    """
+    Stores allocation aditional data like photos.
+
+    It enhance the creation of user activity feed based on Its preferences and friends activity, showing
+    multimedia rellevant data.
+    """
     id = models.BigAutoField(primary_key=True)
     allocation = models.ForeignKey(AllocationSite, on_delete=models.PROTECT, null=False, default=None)
     insert_date = models.DateField(null=False, default=None)
@@ -59,10 +66,11 @@ class MediaData(models.Model):
         db_table = 'media_data'
         managed = False
 
-"""
-The rating asigned to an allocation by an user.
-"""
+
 class Rating(models.Model):
+    """
+    The rating asigned to an allocation by an user.
+    """
     rating = models.DecimalField(max_digits=3, decimal_places=1, default=0)
     comment = models.CharField(max_length=150, null=False, blank=True)
     user=models.ForeignKey(User,  on_delete=models.PROTECT, null=False, default=None)

@@ -12,9 +12,9 @@ class FriendView(APIView):
     def get(self, request, id):
         print('friends.request ', request)
         print('friends.id ', id)
-        friends_activity = UserInteractions.objects.raw("SELECT ui.* FROM Users u "
-                                                        "JOIN user_contact uc ON u.id IN (uc.first_user_id, uc.second_user_id) "
-                                                        "JOIN user_interaction ui ON ui.user_id !=u.id "
+        friends_activity = UserInteractions.objects.raw("SELECT ui.* "
+                                                        "FROM Users u JOIN user_contact uc ON uc.first_user_id = u.id OR uc.second_user_id = u.id "
+                                                        "JOIN user_interaction ui ON ui.user_id !=u.id AND ui.user_id IN(uc.first_user_id, uc.second_user_id) "
                                                         "WHERE u.id = %s "
                                                         "ORDER BY ui.registry_date DESC LIMIT 100",[id])
         if len(friends_activity)==0:
