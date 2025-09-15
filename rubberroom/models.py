@@ -102,7 +102,7 @@ class AllocationBooking(models.Model):
         managed = False
 
 class UserInteractions(models.Model):
-    allocation_site =  models.ForeignKey(AllocationSite, on_delete=models.PROTECT, null=False, default=None)
+    #allocation_site =  models.ForeignKey(AllocationSite, on_delete=models.PROTECT, null=False, default=None)
     registry_date = models.DateField()
     activity_entity = models.CharField(db_comment='The table name that the user interacted with')
     activity_id = models.IntegerField(db_comment='The id of the record in the table that the user interacted with')

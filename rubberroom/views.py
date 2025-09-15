@@ -171,8 +171,6 @@ class MediaDataDetailView(ListAPIView):
         try:
             custom_queryset = MediaData.objects.filter(allocation__id=self.kwargs[Constants.ALLOCATION_ID])
             serializer = MediaDataSerializer(custom_queryset,many=True)
-            print('Paso 3 ', serializer.data)
-            #return HttpResponse('Hola', content_type='application/json', status=200)
             return custom_queryset
         except Exception as ex:
             print('Error ', serializer.data)
