@@ -130,3 +130,34 @@ class UserContact(models.Model):
     class Meta:
         db_table = 'user_contact'
         managed = False
+
+class Country(models.Model):
+    name = models.CharField(max_length=100, null=False, blank=False)
+    rating = models.IntegerField()
+    status = models.CharField(choices=BASE_STATUS)
+
+    class Meta:
+        db_table = 'countries'
+        managed = False
+
+class State(models.Model):
+    name = models.CharField(max_length=100, null=False, blank=False)
+    rating = models.IntegerField()
+    status = models.CharField(choices=BASE_STATUS)
+    country = models.ForeignKey(Country, on_delete=models.PROTECT, null=False, default=None, related_name='country_id',
+                      db_column='country_id')
+
+    class Meta:
+        db_table = 'states'
+        managed = False
+
+class City(models.Model):
+    name = models.CharField(max_length=100, null=False, blank=False)
+    rating = models.IntegerField()
+    status = models.CharField(choices=BASE_STATUS)
+    state = models.ForeignKey(State, on_delete=models.PROTECT, null=False, default=None, related_name='state_id',
+                      db_column='state_id')
+
+    class Meta:
+        db_table = 'cities'
+        managed = False
