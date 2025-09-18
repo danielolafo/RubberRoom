@@ -31,5 +31,6 @@ urlpatterns = [
     path('media-data', MediaDataView.as_view()),
     path('media-data/<int:allocation_id>', MediaDataDetailView.as_view()),
     path('', include("friends.urls")),
+    path('', include("feed.urls")),
     path('admin/', admin.site.urls),
 ]

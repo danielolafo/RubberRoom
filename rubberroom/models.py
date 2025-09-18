@@ -90,12 +90,14 @@ class Tag(models.Model):
         managed = False
 
 class AllocationSiteTags(models.Model):
-    allocation_site_id = models.ForeignKey(AllocationSite, on_delete=models.PROTECT, null=False, default=None)
-    tag_id = models.ForeignKey(Tag, on_delete=models.PROTECT, null=False, default=None)
+    allocation_site_id = models.ForeignKey(AllocationSite, on_delete=models.PROTECT, null=False, default=None, db_column='allocation_site_id')
+    tag_id = models.ForeignKey(Tag, on_delete=models.PROTECT, null=False, default=None, db_column='tag_id')
+    priority = models.IntegerField()
 
     class Meta:
         db_table = 'allocation_site_tag'
         managed = False
+
 
 class AllocationBooking(models.Model):
     PAYMENT_STATUS = [('D', 'Paid'), ('P', 'Pending'), ('T','Partial')]
