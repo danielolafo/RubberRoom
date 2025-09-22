@@ -2,6 +2,9 @@ from django.db import models
 from django.core.validators import MinValueValidator
 
 BASE_STATUS = [('A', 'Active'), ('I', 'Inactive')]
+REACTIONS_TYPES = [('LI','Like'),('LO','Love'),('RE','I recommend'),('DI','Dislike'),('SU','Surprise'),('CO','Comment')]
+SITES_TYPES = [('CO','Country'),('ST','State'),('CI','City'),('AS','Allocation Site')]
+
 class Category(models.Model):
     name = models.CharField(max_length=150, null=False, blank=True)
     state = models.CharField(max_length=1, default=1)
@@ -111,7 +114,25 @@ class AllocationBooking(models.Model):
         db_table = 'allocation_booking'
         managed = False
 
+
+class UserTags(models.Model):
+    """
+    Save the data related to user interests topics
+    """
+    user_id = models.ForeignKey(User, on_delete=models.PROTECT, null=False, default=None, db_column='user_id')
+    tag_id = models.ForeignKey(Tag, on_delete=models.PROTECT, null=False, default=None, db_column='tag_id')
+    status = models.CharField(choices=BASE_STATUS)
+    created = models.DateField()
+
+    class Meta:
+        db_table = 'user_tags'
+        managed = False
+        unique_together = (('user_id','tag_id'))
+
 class UserInteractions(models.Model):
+    """
+    Deprecated: Will be replaced by UserSiteReactions and UserUserReactions
+    """
     #allocation_site =  models.ForeignKey(AllocationSite, on_delete=models.PROTECT, null=False, default=None)
     registry_date = models.DateField()
     activity_entity = models.CharField(db_comment='The table name that the user interacted with')
@@ -119,9 +140,19 @@ class UserInteractions(models.Model):
     user_id = models.ForeignKey(User, on_delete=models.PROTECT, null=False, default=None, db_column='user_id')
 
     class Meta:
-        db_table = 'user_interaction'
+        db_table = 'user_interactions'
         managed = False
 
+class UserReactions(models.Model):
+    user_id = models.ForeignKey(User, on_delete=models.PROTECT, null=False, default=None, db_column='user_id')
+    allocation_id = models.ForeignKey(AllocationSite, on_delete=models.PROTECT, null=False, default=None, db_column='allocation_id')
+    reaction_type = models.CharField(choices=REACTIONS_TYPES, null=False, default=None)
+    reaction_date = models.CharField()
+    parent_reaction_id = models.BigIntegerField('self', null=False, default=None,db_comment='The main comment id on a post')
+
+    class Meta:
+        db_table = 'user_reactions'
+        managed = False
 
 class UserContact(models.Model):
     first_user_id = models.ForeignKey(User, on_delete=models.PROTECT, null=False, default=None, related_name='first_user_id', db_column='first_user_id')
@@ -131,6 +162,22 @@ class UserContact(models.Model):
 
     class Meta:
         db_table = 'user_contact'
+        managed = False
+
+class UserSiteInterests(models.Model):
+    """
+    Relate users with allocations. If a user start to follow an allocation It will be added a new relationship
+    into the table relating the user_id with an allocation_id.
+    """
+    user_id = models.ForeignKey(User, on_delete=models.PROTECT, null=False, default=None, related_name='user_id', db_column='user_id')
+    #allocation_id = models.ForeignKey(AllocationSite, on_delete=models.PROTECT, null=False, default=None, related_name='allocation_id', db_column='allocation_id')
+    site_id = models.BigIntegerField(db_column='site_id', db_comment='The id of the site in corresponding table')
+    entity_name = models.CharField(choices=SITES_TYPES, db_comment='The table name where site_id belongs to')
+    relationship_from = models.DateField()
+    status = models.CharField(choices=BASE_STATUS)
+
+    class Meta:
+        db_table = 'user_site_interests'
         managed = False
 
 class Country(models.Model):

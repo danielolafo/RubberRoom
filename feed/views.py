@@ -23,7 +23,13 @@ def find_similarities(user_id):
     #data = AllocationSite.objects.raw(
     #    "SELECT als.id, als.address FROM allocation_site als JOIN allocation_site_tag ast ON als.id=ast.allocation_site_id JOIN tag t ON ast.tag_id = t.id")
     #data = AllocationSite.objects.all().values('id', 'address', 'owner')
-    data = AllocationSite.objects.raw("SELECT * FROM allocation_site als JOIN allocation_site_tag ast ON als.id=ast.allocation_site_id JOIN tag t ON ast.tag_id = t.id")
+    #data = AllocationSite.objects.raw("SELECT * FROM allocation_site als JOIN allocation_site_tag ast ON als.id=ast.allocation_site_id JOIN tag t ON ast.tag_id = t.id")
+    data = AllocationSite.objects.raw(
+        "SELECT * FROM allocation_site als "
+        "JOIN allocation_site_tag ast ON als.id=ast.allocation_site_id "
+        "JOIN tag t ON ast.tag_id = t.id "
+        "JOIN user_interaction ui ON activity_id=als.id AND activity_entity='allocation_site' "
+        "WHERE ui.user_id<>%(user_id)s ",{'user_id':user_id})
     data = [d.__dict__ for d in data]
     data_list = list(data)
     data_df = pd.DataFrame(data_list)

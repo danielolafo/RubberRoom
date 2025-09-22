@@ -71,3 +71,14 @@ INSERT INTO ALLOCATION_SITE_TAG(ALLOCATION_SITE_ID, TAG_ID) VALUES(32,12);--"Rom
 INSERT INTO ALLOCATION_SITE_TAG(ALLOCATION_SITE_ID, TAG_ID) VALUES(33,14);--"Toscanella"
 
 
+INSERT INTO user_interaction(registry_date,activity_entity,activity_id,user_id) VALUES(TO_DATE('20/02/2019','DD/MM/RRRR'),'allocation_site',28,4);
+INSERT INTO user_interaction(registry_date,activity_entity,activity_id,user_id) VALUES(TO_DATE('13/08/2021','DD/MM/RRRR'),'allocation_site',28,5);
+INSERT INTO user_interaction(registry_date,activity_entity,activity_id,user_id) VALUES(TO_DATE('04/06/2023','DD/MM/RRRR'),'allocation_site',29,6);
+INSERT INTO user_interaction(registry_date,activity_entity,activity_id,user_id) VALUES(TO_DATE('08/12/2021','DD/MM/RRRR'),'allocation_site',29,7);
+INSERT INTO user_interaction(registry_date,activity_entity,activity_id,user_id) VALUES(TO_DATE('09/11/2020','DD/MM/RRRR'),'allocation_site',30,8);
+INSERT INTO user_interaction(registry_date,activity_entity,activity_id,user_id) VALUES(TO_DATE('16/07/2022','DD/MM/RRRR'),'allocation_site',30,9);
+INSERT INTO user_interaction(registry_date,activity_entity,activity_id,user_id) VALUES(TO_DATE('01/04/2019','DD/MM/RRRR'),'allocation_site',31,9);
+INSERT INTO user_interaction(registry_date,activity_entity,activity_id,user_id) VALUES(TO_DATE('06/06/2016','DD/MM/RRRR'),'allocation_site',31,11);
+INSERT INTO user_interaction(registry_date,activity_entity,activity_id,user_id) VALUES(TO_DATE('30/04/2023','DD/MM/RRRR'),'allocation_site',32,12);
+INSERT INTO user_interaction(registry_date,activity_entity,activity_id,user_id) VALUES(TO_DATE('15/12/2022','DD/MM/RRRR'),'allocation_site',33,12);
+
