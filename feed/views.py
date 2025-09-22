@@ -7,6 +7,7 @@ from rubberroom.models import *
 import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
+from rubberroom.mappers import *
 
 # Create your views here.
 
@@ -32,30 +33,34 @@ def find_similarities(user_id):
     tfidf_matrix = tfidf_vectorizer.fit_transform(data_df['description'])
     cosine_sim = cosine_similarity(tfidf_matrix, tfidf_matrix)
     recommendations = get_recommendations('Food', cosine_sim, data_df)
-    print('cosine_sim ',cosine_sim)
-    return HttpResponse(json.dumps(recommendations.to_dict(),default=vars), content_type='application/json', status=200)
+    resp=[allo for allo in data_list if allo['id'] in recommendations.to_dict().values()]
+    resp_recommendations = []
+
+    #Filter and delete duplicated allocations after applied get_recommendations()
+    for i in resp:
+        if len([r for r in resp_recommendations if r['id']==i['id']])==0:
+            resp_recommendations.append(i)
+
+    serializer = AllocationSerializer(resp_recommendations, many=True)
+    return HttpResponse(json.dumps(serializer.data, default=vars), content_type='application/json',
+                        status=200)
 
 def get_recommendations(title, cosine_sim_matrix, df):
-    print('recomm df ', df['description'])
     # Get the index of the movie that matches the title
-    print('Entra 1')
     idx = df[df['description'] == title].index[0]
 
     # Get the pairwise similarity scores of all movies with that movie
-    print('Entra 2')
     sim_scores = list(enumerate(cosine_sim_matrix[idx]))
 
     # Sort the movies based on the similarity scores
-    print('Entra 4')
     sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)
 
     # Get the scores of the 5 most similar movies (excluding itself)
-    print('Entra 5')
     sim_scores = sim_scores[1:6]
 
     # Get the movie indices
-    print('Entra 6')
     movie_indices = [i[0] for i in sim_scores]
 
     # Return the top 5 most similar movie titles
-    return df['description'].iloc[movie_indices]
+    #return df['address'].iloc[movie_indices]
+    return df['id'].iloc[movie_indices]

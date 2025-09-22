@@ -1,7 +1,7 @@
 from .models import *
 from rest_framework import serializers
 
-class AlloationSiteSerializer():
+class AllocationSiteSerializer():
 
     def serialize(self, allocation_site_dto):
         return allocation_site_dto.model_dump()
