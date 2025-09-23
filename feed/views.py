@@ -20,17 +20,12 @@ def create_feed(request, user_id):
 
 def find_similarities(user_id):
 
-    #data = AllocationSite.objects.raw("SELECT als.id as site_id, t.id tag_id, t.description tag_name FROM allocation_site als JOIN allocation_site_tag ast ON als.id=ast.allocation_site_id JOIN tag t ON ast.tag_id = t.id")
-    #data = AllocationSite.objects.raw(
-    #    "SELECT als.id, als.address FROM allocation_site als JOIN allocation_site_tag ast ON als.id=ast.allocation_site_id JOIN tag t ON ast.tag_id = t.id")
-    #data = AllocationSite.objects.all().values('id', 'address', 'owner')
-    #data = AllocationSite.objects.raw("SELECT * FROM allocation_site als JOIN allocation_site_tag ast ON als.id=ast.allocation_site_id JOIN tag t ON ast.tag_id = t.id")
     data = AllocationSite.objects.raw(
         "SELECT als.id, als.address, als.city, t.id, t.description FROM allocation_site als "
         "JOIN allocation_site_tag ast ON als.id=ast.allocation_site_id "
         "JOIN tag t ON ast.tag_id = t.id "
         "JOIN user_interactions ui ON activity_id=als.id AND activity_entity='allocation_site' "
-        "WHERE ui.user_id<>%(user_id)s ",{'user_id':user_id})
+        "WHERE ui.user_id<>%(user_id)s ORDER BY RANDOM() LIMIT 10",{'user_id':user_id})
     data = [d.__dict__ for d in data]
     data_list = list(data)
     data_df = pd.DataFrame(data_list)
