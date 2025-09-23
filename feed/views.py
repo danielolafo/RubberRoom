@@ -64,23 +64,28 @@ def find_similarities(user_id):
                         status=200)
 
 def get_recommendations(title, cosine_sim_matrix, df):
+    indexes = df[df['description'].isin(['Relax',"Food","City"])].index
     # Get the index of the movie that matches the title
-    idx = df[df['description'] == title].index[0]
+    #idx = df[df['description'] == title].index[0]
 
-    # Get the pairwise similarity scores of all movies with that movie
-    sim_scores = list(enumerate(cosine_sim_matrix[idx]))
+    movie_indices = []
+    for ind in indexes:
+        # Get the pairwise similarity scores of all movies with that movie
+        sim_scores = list(enumerate(cosine_sim_matrix[ind]))
 
-    # Sort the movies based on the similarity scores
-    sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)
+        # Sort the movies based on the similarity scores
+        sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)
 
-    # Get the scores of the 5 most similar movies (excluding itself)
-    sim_scores = sim_scores[1:6]
+        # Get the scores of the 5 most similar movies (excluding itself)
+        sim_scores = sim_scores[1:6]
 
-    # Get the movie indices
-    movie_indices = [i[0] for i in sim_scores]
+        # Get the movie indices
+        movie_indices = [i[0] for i in sim_scores]
+
 
     # Return the top 5 most similar movie titles
-    #return df['address'].iloc[movie_indices]
+    logging.info("get_recommendations - Response: ")
+    logging.info(df['id'].iloc[movie_indices])
     return df['id'].iloc[movie_indices]
 
 def group_by_id(data_frame):
