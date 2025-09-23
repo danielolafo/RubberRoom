@@ -1,4 +1,5 @@
 import json
+import logging
 
 from django.shortcuts import render
 from rest_framework.views import APIView
@@ -25,20 +26,31 @@ def find_similarities(user_id):
     #data = AllocationSite.objects.all().values('id', 'address', 'owner')
     #data = AllocationSite.objects.raw("SELECT * FROM allocation_site als JOIN allocation_site_tag ast ON als.id=ast.allocation_site_id JOIN tag t ON ast.tag_id = t.id")
     data = AllocationSite.objects.raw(
-        "SELECT * FROM allocation_site als "
+        "SELECT als.id, als.address, als.city, t.id, t.description FROM allocation_site als "
         "JOIN allocation_site_tag ast ON als.id=ast.allocation_site_id "
         "JOIN tag t ON ast.tag_id = t.id "
-        "JOIN user_interaction ui ON activity_id=als.id AND activity_entity='allocation_site' "
+        "JOIN user_interactions ui ON activity_id=als.id AND activity_entity='allocation_site' "
         "WHERE ui.user_id<>%(user_id)s ",{'user_id':user_id})
     data = [d.__dict__ for d in data]
     data_list = list(data)
     data_df = pd.DataFrame(data_list)
 
+    #All the tags descriptions related to an allocation_site joined in one single list
+    grouped_tags = group_by_id(data_df)
+
+    #Remove duplicated allocation_site_ids
+    tmp_data_list = []
+    for data in data_list:
+        if len([d for d in tmp_data_list if d['id']==data['id']])==0:
+            data['description']=" ".join(grouped_tags.get(data['id']))
+            tmp_data_list.append(data)
+    data_df=pd.DataFrame(tmp_data_list)
+
     # 2. Create TF-IDF Vectorizer for genres
     tfidf_vectorizer = TfidfVectorizer(stop_words='english')
     tfidf_matrix = tfidf_vectorizer.fit_transform(data_df['description'])
     cosine_sim = cosine_similarity(tfidf_matrix, tfidf_matrix)
-    recommendations = get_recommendations('Food', cosine_sim, data_df)
+    recommendations = get_recommendations('Relax', cosine_sim, data_df)
     resp=[allo for allo in data_list if allo['id'] in recommendations.to_dict().values()]
     resp_recommendations = []
 
@@ -70,3 +82,13 @@ def get_recommendations(title, cosine_sim_matrix, df):
     # Return the top 5 most similar movie titles
     #return df['address'].iloc[movie_indices]
     return df['id'].iloc[movie_indices]
+
+def group_by_id(data_frame):
+    formated_data = {}
+    for idx, d in data_frame.iterrows():
+        if formated_data.get(d['id']) is None:#formated_data[d['id']] is None:
+            formated_data[d['id']] = []
+        if d['description'] not in formated_data.get(d['id']):
+            formated_data[d['id']].append(d['description'])
+    logging.info("group_by_id Response: ", formated_data)
+    return formated_data
