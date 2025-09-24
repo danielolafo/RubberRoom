@@ -83,6 +83,8 @@ def get_recommendations(user_tags, cosine_sim_matrix, df):
         # Sort the movies based on the similarity scores
         sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)
 
+        sim_scores = [i[1] for i in sim_scores]
+        sim_scores = list(enumerate(sim_scores))
         # Get the scores of the 5 most similar movies (excluding itself)
         sim_scores = sim_scores[1:6]
 
