@@ -20,6 +20,7 @@ def create_feed(request, user_id):
 
 def find_similarities(user_id):
 
+    #Get all the allocation_site data that an user hasn't interacted with.
     data = AllocationSite.objects.raw(
         "SELECT als.id, als.address, als.city, t.id, t.description FROM allocation_site als "
         "JOIN allocation_site_tag ast ON als.id=ast.allocation_site_id "
@@ -30,6 +31,15 @@ def find_similarities(user_id):
     data_list = list(data)
     data_df = pd.DataFrame(data_list)
 
+    user_viewed_tags = UserTags.objects.raw(""
+                                            "SELECT t.id, t.description FROM allocation_site als "
+                                            "JOIN allocation_site_tag ast ON als.id=ast.allocation_site_id "
+                                            "JOIN tag t ON ast.tag_id = t.id "
+                                            "JOIN user_interactions ui ON activity_id=als.id AND activity_entity='allocation_site' "
+                                            "WHERE ui.user_id=%(user_id)s ORDER BY RANDOM() LIMIT 10",{'user_id':user_id})
+    user_viewed_tags=[vt.description for vt in user_viewed_tags]
+    user_tags = UserTags.objects.raw("SELECT t.id, t.description FROM user_tags ut "
+                                     "JOIN tag t ON ut.tag_id=t.id WHERE ut.user_id=%(user_id)s",{'user_id':user_id})
     #All the tags descriptions related to an allocation_site joined in one single list
     grouped_tags = group_by_id(data_df)
 
@@ -45,7 +55,9 @@ def find_similarities(user_id):
     tfidf_vectorizer = TfidfVectorizer(stop_words='english')
     tfidf_matrix = tfidf_vectorizer.fit_transform(data_df['description'])
     cosine_sim = cosine_similarity(tfidf_matrix, tfidf_matrix)
-    recommendations = get_recommendations('Relax', cosine_sim, data_df)
+    print("tfidf_matrix ", tfidf_matrix)
+    print("cosine_sim ",cosine_sim)
+    recommendations = get_recommendations(user_viewed_tags, cosine_sim, data_df)
     resp=[allo for allo in data_list if allo['id'] in recommendations.to_dict().values()]
     resp_recommendations = []
 
@@ -58,8 +70,8 @@ def find_similarities(user_id):
     return HttpResponse(json.dumps(serializer.data, default=vars), content_type='application/json',
                         status=200)
 
-def get_recommendations(title, cosine_sim_matrix, df):
-    indexes = df[df['description'].isin(['Relax',"Food","City"])].index
+def get_recommendations(user_tags, cosine_sim_matrix, df):
+    indexes = df[df['description'].isin(user_tags)].index
     # Get the index of the movie that matches the title
     #idx = df[df['description'] == title].index[0]
 
@@ -75,8 +87,12 @@ def get_recommendations(title, cosine_sim_matrix, df):
         sim_scores = sim_scores[1:6]
 
         # Get the movie indices
-        movie_indices = [i[0] for i in sim_scores]
-
+        #movie_indices = [i[0] for i in sim_scores]
+        print("[i[0] for i in sim_scores] ",[i[0] for i in sim_scores])
+        print("[i[1] for i in sim_scores] ", [i[1] for i in sim_scores])
+        print("len(sim_scores) ", len(sim_scores))
+        movie_indices.extend([i[0] for i in sim_scores])
+        print("movie_indices ", movie_indices)
 
     # Return the top 5 most similar movie titles
     logging.info("get_recommendations - Response: ")
