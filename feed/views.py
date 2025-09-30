@@ -55,8 +55,6 @@ def find_similarities(user_id):
     tfidf_vectorizer = TfidfVectorizer(stop_words='english')
     tfidf_matrix = tfidf_vectorizer.fit_transform(data_df['description'])
     cosine_sim = cosine_similarity(tfidf_matrix, tfidf_matrix)
-    print("tfidf_matrix ", tfidf_matrix)
-    print("cosine_sim ",cosine_sim)
     recommendations = get_recommendations(user_viewed_tags, cosine_sim, data_df)
     resp=[allo for allo in data_list if allo['id'] in recommendations.to_dict().values()]
     resp_recommendations = []
@@ -89,12 +87,7 @@ def get_recommendations(user_tags, cosine_sim_matrix, df):
         sim_scores = sim_scores[1:6]
 
         # Get the movie indices
-        #movie_indices = [i[0] for i in sim_scores]
-        print("[i[0] for i in sim_scores] ",[i[0] for i in sim_scores])
-        print("[i[1] for i in sim_scores] ", [i[1] for i in sim_scores])
-        print("len(sim_scores) ", len(sim_scores))
         movie_indices.extend([i[0] for i in sim_scores])
-        print("movie_indices ", movie_indices)
 
     # Return the top 5 most similar movie titles
     logging.info("get_recommendations - Response: ")
