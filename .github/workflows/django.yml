@@ -29,3 +29,9 @@ jobs:
     - name: Run Tests
       run: |
         python manage.py test
+    - name: Deploy to render
+        uses: johnbeynon/render-deploy-action@v0.0.8
+        with:
+          api-key: ${{ secrets.RENDER_API_KEY }}
+          service-id: ${{ secrets.RENDER_SERVICE_ID }}
+          wait-for-success: true
