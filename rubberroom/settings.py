@@ -80,7 +80,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'ruberroom',
-        'USER': 'postgres',
+        'USER': 'rubber',
         'PASSWORD': 'new_password',
         'HOST': 'localhost',
         'PORT': '5432'
