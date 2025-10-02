@@ -79,10 +79,10 @@ WSGI_APPLICATION = 'rubberroom.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'ruberroom',
+        'NAME': 'rubberroom',
         'USER': 'rubber',
-        'PASSWORD': 'new_password',
-        'HOST': 'localhost',
+        'PASSWORD': 'SgvioCN7BvPuYnzXDiHccPWdTN0gfV2o',
+        'HOST': 'dpg-d3epporipnbc73e1rcag-a.oregon-postgres.render.com',
         'PORT': '5432'
     }
 }
