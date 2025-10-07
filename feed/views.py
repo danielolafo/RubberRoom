@@ -20,6 +20,10 @@ def create_feed(request, user_id):
 
 def find_similarities(user_id):
 
+    """
+    Uses cosine simmilarity to choose the best publications to suggest to the user
+    """
+
     #Get all the allocation_site data that an user hasn't interacted with.
     data = AllocationSite.objects.raw(
         "SELECT als.id, als.address, als.city, t.id, t.description FROM allocation_site als "
@@ -69,34 +73,40 @@ def find_similarities(user_id):
                         status=200)
 
 def get_recommendations(user_tags, cosine_sim_matrix, df):
-    indexes = df[df['description'].isin(user_tags)].index
-    # Get the index of the movie that matches the title
-    #idx = df[df['description'] == title].index[0]
+    try:
+        indexes = df[df['description'].isin(user_tags)].index
+        # Get the index of the movie that matches the title
+        # idx = df[df['description'] == title].index[0]
 
-    movie_indices = []
-    for ind in indexes:
-        # Get the pairwise similarity scores of all movies with that movie
-        sim_scores = list(enumerate(cosine_sim_matrix[ind]))
+        movie_indices = []
+        for ind in indexes:
+            # Get the pairwise similarity scores of all movies with that movie
+            sim_scores = list(enumerate(cosine_sim_matrix[ind]))
 
-        # Sort the movies based on the similarity scores
-        sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)
+            # Sort the movies based on the similarity scores
+            sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)
 
-        sim_scores = [i[1] for i in sim_scores]
-        sim_scores = list(enumerate(sim_scores))
-        # Get the scores of the 5 most similar movies (excluding itself)
-        sim_scores = sim_scores[1:6]
+            sim_scores = [i[1] for i in sim_scores]
+            sim_scores = list(enumerate(sim_scores))
+            # Get the scores of the 5 most similar movies (excluding itself)
+            sim_scores = sim_scores[1:6]
 
-        # Get the movie indices
-        movie_indices.extend([i[0] for i in sim_scores])
+            # Get the movie indices
+            movie_indices.extend([i[0] for i in sim_scores])
 
-    # Return the top 5 most similar movie titles
-    logging.info("get_recommendations - Response: ")
-    logging.info(df['id'].iloc[movie_indices])
-    return df['id'].iloc[movie_indices]
+        # Return the top 5 most similar movie titles
+        logging.info("get_recommendations - Response: ")
+        logging.info(df['id'].iloc[movie_indices])
+        return df['id'].iloc[movie_indices]
+    except Exception as ex:
+        return []
 
 def group_by_id(data_frame):
+    print("group_by_id***")
+    print("data_frame ", data_frame)
     formated_data = {}
     for idx, d in data_frame.iterrows():
+        print("d ",d)
         if formated_data.get(d['id']) is None:#formated_data[d['id']] is None:
             formated_data[d['id']] = []
         if d['description'] not in formated_data.get(d['id']):
