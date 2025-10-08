@@ -12,7 +12,7 @@ class AllocationSiteDto:
         self.ratings = []
         self.tags = []
 
-class UserDto(pydantic.BaseModel):
+class UserDto:
     def __init__(self):
         self.id = None
         self.username = None

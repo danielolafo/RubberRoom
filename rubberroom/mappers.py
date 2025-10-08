@@ -54,7 +54,7 @@ def user_to_dto(user):
     user_dto.username=user.username
     user_dto.email=user.email
     user_dto.description=user.description
-    user_dto.user_rating=user.description
+    user_dto.user_rating=user.user_rating
     return user_dto
 
 ######################################3

@@ -1,0 +1,34 @@
+services:
+  - type: web
+    name: myproject
+    env: python
+    plan: free
+    region: frankfurt
+    buildCommand: |
+      pip install -r requirements.txt
+      python manage.py collectstatic --noinput
+      python manage.py migrate_schemas --shared --tenant
+      startCommand: gunicorn myproject.wsgi:application
+      envVars:
+      - key: SECRET_KEY
+        value: your-secret-key-here
+      - key: DEBUG
+        value: false
+      - key: ALLOWED_HOSTS
+        value: example.com
+      - key: DB_NAME
+        value: mydatabase
+      - key: DB_USER
+        value: mydatabase_user
+      - key: DB_PASSWORD
+        value: securepassword123
+      - key: DB_HOST
+        value: db.example-provider.com
+      - key: DB_PORT
+        value: 5432
+      - key: CORS_ALLOWED_ORIGINS
+        value: https://example.com
+      - key: RENDER_API_KEY
+        value: rnd_5HZbix7ZcAyflXwbp0IH9j7mJE1f
+      - key: RENDER_SERVICE_ID
+        value: srv-d3ejc13ipnbc73bvmdt0

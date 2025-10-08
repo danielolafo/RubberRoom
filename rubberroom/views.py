@@ -97,6 +97,7 @@ class UserView(APIView):
     def post(self, request):
         req = json.loads(request.body.decode('utf-8'))
         user = User(**req)
+        logging.info("post user: %s", json.dumps(user, default=vars))
         user_validation = self.validate_user(user)
         if(not user_validation.is_valid):
             logging.info("post %s", json.dumps(user_validation, default=vars))
