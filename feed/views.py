@@ -16,7 +16,8 @@ from rubberroom.mappers import *
 def create_feed(request, user_id):
     print('User id ',user_id)
     resp= find_similarities(user_id)
-    return HttpResponse(resp,content_type='application/json', status=200)
+    status = 200 if len(resp.content)!=0 else 204
+    return HttpResponse(resp,content_type='application/json', status=status)
 
 def find_similarities(user_id):
 
@@ -46,7 +47,12 @@ def find_similarities(user_id):
                                      "JOIN tag t ON ut.tag_id=t.id WHERE ut.user_id=%(user_id)s",{'user_id':user_id})
     #All the tags descriptions related to an allocation_site joined in one single list
     grouped_tags = group_by_id(data_df)
+    print("len(grouped_tags)",grouped_tags)
+    if len(grouped_tags)==0:
+        print("++++++")
+        return HttpResponse(status=204)
 
+    print("----")
     #Remove duplicated allocation_site_ids
     tmp_data_list = []
     for data in data_list:
@@ -67,6 +73,11 @@ def find_similarities(user_id):
     for i in resp:
         if len([r for r in resp_recommendations if r['id']==i['id']])==0:
             resp_recommendations.append(i)
+
+    if len(resp_recommendations)==0:
+        print("len(resp_recommendations) %s",len(resp_recommendations))
+        return HttpResponse(
+                            status=204)
 
     serializer = AllocationSerializer(resp_recommendations, many=True)
     return HttpResponse(json.dumps(serializer.data, default=vars), content_type='application/json',
@@ -95,21 +106,23 @@ def get_recommendations(user_tags, cosine_sim_matrix, df):
             movie_indices.extend([i[0] for i in sim_scores])
 
         # Return the top 5 most similar movie titles
-        logging.info("get_recommendations - Response: ")
-        logging.info(df['id'].iloc[movie_indices])
+        logging.info("get_recommendations - Response: %s",df['id'].iloc[movie_indices])
         return df['id'].iloc[movie_indices]
     except Exception as ex:
+        print("EException ",ex)
         return []
 
 def group_by_id(data_frame):
     print("group_by_id***")
-    print("data_frame ", data_frame)
     formated_data = {}
+    if(data_frame.empty):
+        logging.info("group_by_id Response: %s", formated_data)
+        return []
     for idx, d in data_frame.iterrows():
         print("d ",d)
         if formated_data.get(d['id']) is None:#formated_data[d['id']] is None:
             formated_data[d['id']] = []
         if d['description'] not in formated_data.get(d['id']):
             formated_data[d['id']].append(d['description'])
-    logging.info("group_by_id Response: ", formated_data)
+    logging.info("group_by_id Response: %s", formated_data)
     return formated_data
