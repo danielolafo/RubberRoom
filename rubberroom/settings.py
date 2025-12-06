@@ -80,9 +80,9 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'rubberroom',
-        'USER': 'rubber',
-        'PASSWORD': 'SgvioCN7BvPuYnzXDiHccPWdTN0gfV2o',
-        'HOST': 'dpg-d3epporipnbc73e1rcag-a.oregon-postgres.render.com',
+        'USER': 'ruberroom_user',
+        'PASSWORD': 'Npd5zwmPiLTuRp4SnsnIKeox4diV4AWt',
+        'HOST': 'dpg-d4adp8hr0fns73fitph0-a.oregon-postgres.render.com',
         'PORT': '5432'
     }
 }
