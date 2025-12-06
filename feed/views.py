@@ -21,6 +21,7 @@ def create_feed(request, user_id):
 
 def find_similarities(user_id):
 
+
     """
     Uses cosine simmilarity to choose the best publications to suggest to the user
     """
