@@ -32,12 +32,12 @@ name: 'Deploy to Cloud Run from Source'
 on:
   push:
     branches:
-      - '"master"'
+      - '"google-cloud"'
 
 env:
   PROJECT_ID: 'erudite-marker-477918-f4'
   REGION: 'us-central1'
-  SERVICE: 'django-cloud-app'
+  SERVICE: 'rubberroom'
 
 jobs:
   deploy:
