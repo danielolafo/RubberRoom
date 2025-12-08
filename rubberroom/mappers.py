@@ -1,7 +1,7 @@
 from .models import *
 from .dtos import AllocationSiteDto, UserDto
 from rest_framework import serializers
-from mapper.object_mapper import ObjectMapper
+#from mapper.object_mapper import ObjectMapper
 import base64
 
 class Base64BinaryField(serializers.Field):
@@ -59,7 +59,7 @@ def user_to_dto(user):
 
 ######################################3
 
-mapper = ObjectMapper()
+#mapper = ObjectMapper()
 
 
 user_mapping = {
@@ -69,7 +69,8 @@ user_mapping = {
     "description" : lambda entity: entity.description,
     "email" : lambda entity: entity.email
 }
-
+"""
 def to_user_dto(user):
     mapper.create_map(User, UserDto, user_mapping)
     return mapper.map(user, UserDto, user_mapping)
+"""

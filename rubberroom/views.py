@@ -13,7 +13,7 @@ from .utils import *
 from .exceptions import *
 import re
 from .dtos import *
-from mapper.object_mapper import  ObjectMapper
+#from mapper.object_mapper import  ObjectMapper
 import datetime
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
